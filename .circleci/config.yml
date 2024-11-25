@@ -1,18 +1,21 @@
 version: 2.1
+
 orbs:
   cypress: cypress-io/cypress@3.3.1
+
 jobs:
   start-server:
-        docker:
-          - image: cypress/base:latest
-        steps:
-          - checkout
-          - run:
-              name: Install dependencies
-              command: npm install
-          - run:
-              name: Build the app
-              command: npm run build
+    docker:
+      - image: cypress/base:latest
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Build the app
+          command: npm run build
+
   deploy-to-render-staging:
     docker:
       - image: cimg/base:current
@@ -22,31 +25,34 @@ jobs:
           command: |
             echo "Deploying to Staging"
             curl $RENDER_STAGING_DEPLOYHOOK
+
   deploy-to-production:
     docker:
       - image: cimg/base:current
     steps:
       - run:
-          name: Deploy to Render Production
+          name: Deploy to Production
           command: |
             echo "Deploying to Production"
             curl $RENDER_PRODUCTION_DEPLOYHOOK
+
 workflows:
   run-tests-and-stage-then-hold-for-prod:
     jobs:
       - start-server
       - cypress/run:
-          name: run-component-tests
+          name: Run Component Tests
           cypress-command: npx cypress run --component
       - deploy-to-render-staging:
           requires:
-            - run-component-tests
+            - Run Component Tests
           filters:
             branches:
               only: main
       - hold:
           type: approval
-          requires: deploy-to-staging
+          requires:
+            - deploy-to-render-staging
       - deploy-to-production:
           requires:
             - hold
