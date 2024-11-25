@@ -1,39 +1,37 @@
 version: 2.1
-
-orbs: cypress-io/cypress@3.3.1
-
+orbs:
+  cypress: cypress-io/cypress@3.3.1
 jobs:
   start-server:
-    docker:
-       - image: cypress/base:latest
-    steps:
-      - checkout
-      - run:
-          name: Install Deps
-          command: npm install
-      - run:
-          name: Build
-          command: npm run build
-  deploy-to-staging:
+        docker:
+          - image: cypress/base:latest
+        steps:
+          - checkout
+          - run:
+              name: Install dependencies
+              command: npm install
+          - run:
+              name: Build the app
+              command: npm run build
+  deploy-to-render-staging:
     docker:
       - image: cimg/base:current
     steps:
       - run:
-          name: Deploy to staging
+          name: Deploy to Render Staging
           command: |
-          echo "deploying to staging environment"
-          curl $RENDER_STAGING_DEPLOYHOOK
-
+            echo "Deploying to Render Staging"
+            curl $RENDER_STAGING_DEPLOYHOOK
 workflows:
-  run-tests-and-stage-workflow:
+  run-tests-and-deploy-to-staging:
     jobs:
       - start-server
       - cypress/run:
           name: run-component-tests
-          command: npx cypress run --component
-      - deploy-to-staging:
+          cypress-command: npx cypress run --component
+      - deploy-to-render-staging:
           requires:
             - run-component-tests
-        filters:
-          branches:
-            only: main
+          filters:
+            branches:
+              only: main
