@@ -17,7 +17,7 @@ orbs: cypress-io/cupress@3.3.1
 jobs:
   start-server:
     docker:
-       - image: cypress/base:current
+       - image: cypress/base:latest
     steps:
       - checkout
       - run:
@@ -31,7 +31,7 @@ jobs:
       - image: cimg/base:current
     steps:
       - run:
-        name: Deplo to staging
+        name: Deploy to staging
         command: |
           echo "deploying to staging environment"
           curl $RENDER_STAGING_DEPLOYHOOK
@@ -42,7 +42,7 @@ workflows:
       - start-server
       - cypress/run:
         name: run-componenet-tests
-        command: npm cypress run --component
+        command: npx cypress run --component
       - deploy-to-staging:
         requires:
           - run-component-tests
