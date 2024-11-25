@@ -1,18 +1,6 @@
-# version: 2.1
-# jobs:
-#   hello-world:
-#     docker:
-#       - image: cimg/base:current
-#     steps: 
-#       - run: echo "Hello World!"
-# workflows:
-#   hello-world-workflow:
-#     jobs:
-#       - hello-world
-
 version: 2.1
 
-orbs: cypress-io/cupress@3.3.1
+orbs: cypress-io/cypress@3.3.1
 
 jobs:
   start-server:
@@ -31,8 +19,8 @@ jobs:
       - image: cimg/base:current
     steps:
       - run:
-        name: Deploy to staging
-        command: |
+          name: Deploy to staging
+          command: |
           echo "deploying to staging environment"
           curl $RENDER_STAGING_DEPLOYHOOK
 
@@ -41,7 +29,7 @@ workflows:
     jobs:
       - start-server
       - cypress/run:
-          name: run-componenet-tests
+          name: run-component-tests
           command: npx cypress run --component
       - deploy-to-staging:
           requires:
