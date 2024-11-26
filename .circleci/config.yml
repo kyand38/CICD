@@ -21,7 +21,7 @@ jobs:
       - image: cimg/base:current
     steps:
       - run:
-          name: Deploy to Staging
+          name: deploy-to-staging
           command: |
             echo "Deploying to Staging"
             curl $RENDER_STAGING_DEPLOYHOOK
@@ -41,21 +41,17 @@ workflows:
     jobs:
       - start-server
       - cypress/run:
-          name: Run Component Tests
+          name: run-component-tests
           cypress-command: npx cypress run --component
       - deploy-to-render-staging:
           requires:
-            - Run Component Tests
+            - run-component-tests
           filters:
             branches:
               only: main
-      - hold:
-          type: approval
-          requires:
-            - deploy-to-render-staging
       - deploy-to-production:
           requires:
-            - hold
+            - deploy-to-staging
           filters:
             branches:
               only: main
