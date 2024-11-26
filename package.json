@@ -19,7 +19,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=16"
+    "node": ">=16 <21"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",
