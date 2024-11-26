@@ -5,39 +5,37 @@ orbs:
 
 jobs:
   start-server:
-    docker:
-      - image: cypress/base:latest
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Build the app
-          command: npm run build
-
+        docker:
+          - image: cypress/base:latest
+        steps:
+          - checkout
+          - run:
+              name: Install dependencies
+              command: npm install
+          - run:
+              name: Build the app
+              command: npm run build
   deploy-to-render-staging:
     docker:
       - image: cimg/base:current
     steps:
       - run:
-          name: deploy-to-staging
+          name: Deploy to Render Staging
           command: |
-            echo "Deploying to Staging"
+            echo "Deploying to Render Staging"
             curl $RENDER_STAGING_DEPLOYHOOK
-
-  deploy-to-production:
+  deploy-to-render-production:
     docker:
       - image: cimg/base:current
     steps:
       - run:
-          name: Deploy to Production
+          name: Deploy to Render Production
           command: |
-            echo "Deploying to Production"
+            echo "Deploying to Render production"
             curl $RENDER_PRODUCTION_DEPLOYHOOK
 
 workflows:
-  run-tests-and-stage-then-hold-for-prod:
+  run-tests-and-deploy-to-staging-then-production:
     jobs:
       - start-server
       - cypress/run:
@@ -49,9 +47,9 @@ workflows:
           filters:
             branches:
               only: main
-      - deploy-to-production:
+      - deploy-to-render-production:
           requires:
-            - deploy-to-staging
+            - deploy-to-render-staging
           filters:
             branches:
               only: main
